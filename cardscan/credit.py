@@ -12,7 +12,7 @@ def handle_args():
     parser = argparse.ArgumentParser(
         prog="Automated Credit Card Checker",
         description="Determine validity of a card on a target Card Number",
-        epilog="""Example: check -n 378282246310005""",
+        epilog="""Example: cardscan -n 378282246310005""",
         formatter_class=argparse.MetavarTypeHelpFormatter
     )
 
@@ -84,8 +84,7 @@ def main():
         return
 
     if card.is_valid():
-        print(card.get_type(), end="")
-        print(": {}".format(card.masked()))
+        print("\n{}: {}".format(card.get_type(), card.masked()))
     else:
         logger.error("INVALID")
 
