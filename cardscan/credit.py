@@ -1,7 +1,4 @@
 import logging
-import argparse
-import os
-import sys
 import requests
 import re
 
@@ -12,35 +9,7 @@ KNOWN_TEST_NUMBERS = {
 
 TEST_PREFIXES = ["4111", "4012", "6011", "3782", "5555"]
 
-
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
-
-# Handle arguments
-def handle_args():
-    parser = argparse.ArgumentParser(
-        prog="Automated Credit Card Checker",
-        description="Determine validity of a card on a target Card Number",
-        epilog="""Example: cardscan -n 378282246310005""",
-        formatter_class=argparse.MetavarTypeHelpFormatter
-    )
-
-    # Add arguments
-    parser.add_argument("-n", "--number",
-                        help="Credit Card number (or use CARD_NUMBER env)",
-                        type=str)
-
-    parser.add_argument("--deep-check", help="Perform BIN lookup and fraud checks", action="store_true")
-
-    args = parser.parse_args()
-
-    number_str = args.number or os.getenv("CARD_NUMBER")
-    if not number_str:
-        logger.error("No card number provided. Use -n or set CARD_NUMBER environment variable")
-        sys.exit(1)
-    
-    return number_str, args.deep_check
 
 class CreditCard:
     def __init__(self, number: str):
@@ -54,8 +23,6 @@ class CreditCard:
         """Validate using Luhn’s algorithm."""
         sum_of_doubled_digits = 0
         sum_of_remaining_digits = 0
-
-        # Process every second digit from the right, starting from second-to-last
         for i in range(self.length - 2, -1, -2):
             digit = int(self.number_str[i])
             doubled = digit * 2
@@ -63,7 +30,6 @@ class CreditCard:
                 doubled = 1 + (doubled % 10)
             sum_of_doubled_digits += doubled
 
-        # Process the remaining digits
         for i in range(self.length - 1, -1, -2):
             digit = int(self.number_str[i])
             sum_of_remaining_digits += digit
@@ -143,15 +109,3 @@ class CreditCard:
                 print(f"  Bank:     {bin_data.get('bank', {}).get('name', 'N/A')}")
             else:
                 print("  No data found.")
-
-def main():
-    try:
-        card_number, deep_check = handle_args()
-        card = CreditCard(card_number)
-        card.report(deep_check)
-    except ValueError as e:
-        logger.error(f"Invalid input: {e}")
-        return
-
-if __name__ == "__main__":
-    main()
