@@ -55,14 +55,37 @@ cardscan
 
 ```bash
 $ cardscan -n 378282246310005
-AMEX: ***********0005
+Card Number: ***********0005
+Type: AMEX
+Valid: ✅
+Note: 🚧 Known test card
 ```
 
 ```bash
 $ cardscan -n 1234567890123456
-2025-05-05 12:00:00 - ERROR: INVALID
+Card Number: *************4815
+Type: INVALID
+Valid: ❌
 ```
 
+---
+### 🔍 Deep Check Example
+
+To perform a deeper check with BIN lookup and fraud checks, use the `--deep-check` option:
+
+```bash
+$ cardscan -n 4111111111111111 --deep-check
+Card Number: ************1111
+Type: VISA
+Valid: ✅
+
+🔍 BIN Info:
+  Scheme:   Visa
+  Type:     Credit
+  Brand:    Visa
+  Country:  United States
+  Bank:     Bank of America
+```
 ---
 
 ## 🧠 How It Works
